@@ -1,8 +1,10 @@
 package com.sidepr.mono.sns.post.domain;
 
 import com.sidepr.mono.sns.comment.domain.Comment;
+import com.sidepr.mono.sns.comment.dto.CommentDetailResponse;
 import com.sidepr.mono.sns.global.BaseTimeEntity;
 import com.sidepr.mono.sns.post.dto.PostDetailResponse;
+import com.sidepr.mono.sns.post.dto.PostListResponse;
 import com.sidepr.mono.sns.post.dto.PostUpdateRequest;
 import com.sidepr.mono.sns.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -78,14 +80,14 @@ public class Post extends BaseTimeEntity {
     }
 
     public void deletePost(){
-        this.isDeleted = false;
+        this.isDeleted = true;
     }
 
     public void updatePost(PostUpdateRequest postUpdateRequest){
         this.content = content;
     }
 
-    public PostDetailResponse toPostDetailResponse(List<Comment> comments) {
+    public PostDetailResponse toPostDetailResponse(List<CommentDetailResponse> comments) {
         return PostDetailResponse.builder()
                 .id(id)
                 .userId(user.getEmail())
@@ -96,9 +98,26 @@ public class Post extends BaseTimeEntity {
                                 .map(PostImage::getImage)
                                 .collect(Collectors.toList())
                 )
-                .comments(
-                        // TODO comment response 생성해서 응답해야 함
+                .comments(comments)
+                .likes(
+                        // TODO likes response 생성해서 응답해야 함
                         null
+                )
+                .createdDate(getCreatedDate())
+                .lastModifiedDate(getLastModifiedDate())
+                .build();
+    }
+
+    public PostListResponse toPostListResponse(){
+        return PostListResponse.builder()
+                .id(id)
+                .userId(user.getId())
+                .isDeleted(isDeleted)
+                .content(content)
+                .images(
+                        getImages().stream()
+                                .map(PostImage::getImage)
+                                .collect(Collectors.toList())
                 )
                 .likes(
                         // TODO likes response 생성해서 응답해야 함

@@ -34,20 +34,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String name;
 
-    @Builder
-    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, boolean isDeleted) {
-        this.id = id;
-        this.name = name;
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.profileImage = profileImage;
-        this.description = description;
-        this.phoneNumber = phoneNumber;
-        this.isDeleted = isDeleted;
-        this.roles = Role.USER;
-    }
-
     @Column(length = 30)
     private String nickname;
 
@@ -83,6 +69,20 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role roles;
 
+    @Builder
+    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, boolean isDeleted) {
+        this.id = id;
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.profileImage = profileImage;
+        this.description = description;
+        this.phoneNumber = phoneNumber;
+        this.isDeleted = isDeleted;
+        this.roles = Role.USER;
+    }
+
     public void updateUserInfo(UserUpdateRequest userUpdateRequest){
         this.nickname = userUpdateRequest.getNickname();
         this.description = userUpdateRequest.getDescription();
@@ -116,5 +116,10 @@ public class User extends BaseTimeEntity {
 
     public void updateUserPasswordInfo(PasswordEncoder passwordEncoder, UserPasswordChangeRequest userPasswordChangeRequest) {
         this.password = passwordEncoder.encode(userPasswordChangeRequest.getNewPassword());
+    }
+
+    public void followUser(Follow follow){
+        this.getFollowing().add(follow);
+        follow.getFollowed().getFollower().add(follow);
     }
 }

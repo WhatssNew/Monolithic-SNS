@@ -16,6 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByUser(User user);
 
+    // TODO Following에 대한 post 검색
 
     // TODO 태그에 따른 검색
 

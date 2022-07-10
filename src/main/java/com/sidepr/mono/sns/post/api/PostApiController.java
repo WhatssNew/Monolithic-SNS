@@ -1,13 +1,13 @@
 package com.sidepr.mono.sns.post.api;
 
 import com.sidepr.mono.sns.global.utils.ApiUtils;
-import com.sidepr.mono.sns.post.dto.PostCreateRequest;
-import com.sidepr.mono.sns.post.dto.PostDetailResponse;
-import com.sidepr.mono.sns.post.dto.PostUpdateRequest;
-import com.sidepr.mono.sns.post.dto.PostUpdateResponse;
+import com.sidepr.mono.sns.post.dto.*;
 import com.sidepr.mono.sns.post.service.PostService;
 import com.sidepr.mono.sns.user.security.JwtAuthentication;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +62,19 @@ public class PostApiController {
                 token.getId(),
                 id,
                 postUpdateRequest,
-                files);
+                files
+        );
         return ResponseEntity.ok(ApiUtils.success(postUpdateResponse));
     }
+
+    @GetMapping
+    public ResponseEntity<ApiUtils.ApiResult<Page<PostListResponse>>> get(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PageableDefault(size = 20, sort = "createdDate") Pageable pageable
+    ){
+        Page<PostListResponse> posts = postService.findPosts(token.getId(), pageable);
+        return ResponseEntity.ok(ApiUtils.success(posts));
+    }
+
+    // TODO 좋아요
 }

@@ -12,6 +12,7 @@ import com.sidepr.mono.sns.user.security.JwtAuthenticationToken;
 import com.sidepr.mono.sns.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -79,6 +80,7 @@ public class UserApiController {
                                     user.getRoles().toString())))
                     ;
         } catch (AuthenticationException e){
+            // TODO response code 검토 필요
             throw new UnauthorizedException(e.getMessage(), e);
         }
     }
@@ -127,4 +129,21 @@ public class UserApiController {
         return httpHeaders;
     }
 
+    @PostMapping("/{id}/follow")
+    public ResponseEntity<Void> followUser(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("id") Long userId
+    ){
+        userService.followUser(token.getId(), userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{id}/unfollow")
+    public ResponseEntity<Void> unFollowUser(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("id") Long userId
+    ){
+        userService.unFollowUser(token.getId(), userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

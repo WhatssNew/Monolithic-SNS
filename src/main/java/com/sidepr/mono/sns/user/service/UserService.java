@@ -1,9 +1,9 @@
 package com.sidepr.mono.sns.user.service;
 
 
-import com.sidepr.mono.sns.global.error.ErrorCode;
 import com.sidepr.mono.sns.global.error.exception.NotFoundException;
 import com.sidepr.mono.sns.global.fileuploader.FileUploader;
+import com.sidepr.mono.sns.user.domain.Follow;
 import com.sidepr.mono.sns.user.domain.User;
 import com.sidepr.mono.sns.user.dto.UserPasswordChangeRequest;
 import com.sidepr.mono.sns.user.dto.UserResponse;
@@ -11,6 +11,8 @@ import com.sidepr.mono.sns.user.dto.UserSignupRequest;
 import com.sidepr.mono.sns.user.dto.UserUpdateRequest;
 import com.sidepr.mono.sns.user.exception.DuplicateUserException;
 import com.sidepr.mono.sns.user.exception.NotFoundUserException;
+import com.sidepr.mono.sns.user.exception.NotValidUserRelationException;
+import com.sidepr.mono.sns.user.repository.FollowRepository;
 import com.sidepr.mono.sns.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +28,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static com.sidepr.mono.sns.global.error.ErrorCode.*;
+
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
     private final FileUploader uploader;
 
     @Value("${file.user}")
@@ -45,16 +49,37 @@ public class UserService {
     public User login(String email, String password) {
 
         User user = userRepository.findByEmailAndIsDeletedFalse(email)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_RESOURCE_ERROR));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_RESOURCE_ERROR));
         user.login(passwordEncoder, password);
         return user;
     }
 
+    @Transactional
     public Long signup(UserSignupRequest form){
         if((!isDuplicateUser(form) && !form.isDifferentPassword())){
             form.setEncodedPassword(passwordEncoder.encode(form.getPassword()));
         }
         return userRepository.save(form.toEntity()).getId();
+    }
+
+    @Transactional
+    public void followUser(Long myUserId, Long followingUserId) {
+        User user = findActiveUser(myUserId);
+        User followingUser = findActiveUser(followingUserId);
+        isValidUserRelation(user, followingUser);
+
+        Follow follow = new Follow(user, followingUser);
+        followRepository.save(follow);
+    }
+
+    @Transactional
+    public void unFollowUser(Long myUserId, Long unFollowingUserId) {
+        User user = findActiveUser(myUserId);
+        User unFollowingUser = findActiveUser(unFollowingUserId);
+        isValidUserRelation(user, unFollowingUser);
+
+        Follow follow = new Follow(user, unFollowingUser);
+        followRepository.delete(follow);
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +96,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findActiveUser(Long id) {
         return userRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new NotFoundUserException(ErrorCode.NOT_FOUND_RESOURCE_ERROR));
+                .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
     }
 
     @Transactional(readOnly = true)
@@ -82,6 +107,7 @@ public class UserService {
         return false;
     }
 
+    @Transactional
     public Long update(Long id, UserUpdateRequest userUpdateRequest, MultipartFile file) throws IOException {
         User user = findActiveUser(id);
         userUpdateRequest.changeProfileImage(user.getProfileImage());
@@ -92,10 +118,6 @@ public class UserService {
         user.updateUserInfo(userUpdateRequest);
 
         return user.getId();
-    }
-
-    private String getDayFormatDirectoryName() {
-        return DIRECTORY + dateTimeFormatter.format(LocalDateTime.now());
     }
 
     @Transactional
@@ -119,8 +141,16 @@ public class UserService {
 
     private boolean isDuplicateUser(UserSignupRequest form) {
         if (userRepository.existsByEmailAndIsDeletedFalse(form.getEmail())) {
-            throw new DuplicateUserException(ErrorCode.CONFLICT_VALUE_ERROR);
+            throw new DuplicateUserException(CONFLICT_VALUE_ERROR);
         }
         return false;
+    }
+
+    private void isValidUserRelation(User user, User followingUser) {
+        if(user != followingUser) throw new NotValidUserRelationException(NOT_VALID_REQUEST_ERROR);
+    }
+
+    private String getDayFormatDirectoryName() {
+        return DIRECTORY + dateTimeFormatter.format(LocalDateTime.now());
     }
 }

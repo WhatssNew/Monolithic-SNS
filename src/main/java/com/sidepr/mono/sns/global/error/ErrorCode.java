@@ -29,6 +29,11 @@ public enum ErrorCode {
     NOT_PERMITTED_RESOURCE_ERROR(
             "접근할 수 없는 리소스입니다.",
             HttpStatus.UNAUTHORIZED.value()
+    ),
+
+    NOT_VALID_REQUEST_ERROR(
+            "잘못된 요청입니다.",
+            HttpStatus.BAD_REQUEST.value()
     );
 
 

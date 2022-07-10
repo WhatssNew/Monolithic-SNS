@@ -25,4 +25,9 @@ public class Follow extends BaseTimeEntity {
     @JoinColumn(name = "follower")
     private User follower;
 
+    public Follow(User follower, User following) {
+        this.follower = follower;
+        this.followed = following;
+        follower.followUser(this);
+    }
 }

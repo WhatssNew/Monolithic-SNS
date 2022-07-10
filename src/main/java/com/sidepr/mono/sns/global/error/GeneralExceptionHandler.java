@@ -1,13 +1,17 @@
 package com.sidepr.mono.sns.global.error;
 
 
+import com.sidepr.mono.sns.comment.exception.NotFoundCommentException;
+import com.sidepr.mono.sns.comment.exception.NotPermittedCommentException;
 import com.sidepr.mono.sns.global.error.exception.NotFoundException;
 import com.sidepr.mono.sns.global.error.exception.NotPermittedResourceException;
 import com.sidepr.mono.sns.global.error.exception.UnauthorizedException;
 import com.sidepr.mono.sns.global.utils.ApiUtils;
 import com.sidepr.mono.sns.post.exception.NotFoundPostException;
+import com.sidepr.mono.sns.post.exception.NotPermittedPostException;
 import com.sidepr.mono.sns.user.exception.NotFoundUserException;
 import com.sidepr.mono.sns.user.exception.NotValidPasswordException;
+import com.sidepr.mono.sns.user.exception.NotValidUserRelationException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +47,7 @@ public class GeneralExceptionHandler {
             NoHandlerFoundException.class,
             NotFoundException.class,
             NotFoundPostException.class,
+            NotFoundCommentException.class
     })
     public ResponseEntity<?> handleNotFoundException(Exception e) {
         return newResponse(e, HttpStatus.NOT_FOUND);
@@ -51,7 +56,9 @@ public class GeneralExceptionHandler {
     @ExceptionHandler({
             UnauthorizedException.class,
             NotPermittedResourceException.class,
-            NotFoundUserException.class
+            NotFoundUserException.class,
+            NotPermittedPostException.class,
+            NotPermittedCommentException.class
     })
     public ResponseEntity<?> handleUnauthorizedException(Exception e) {
         return newResponse(e, HttpStatus.UNAUTHORIZED);
@@ -62,7 +69,8 @@ public class GeneralExceptionHandler {
             IllegalStateException.class,
             ConstraintViolationException.class,
             MethodArgumentNotValidException.class,
-            NotValidPasswordException.class
+            NotValidPasswordException.class,
+            NotValidUserRelationException.class
     })
     public ResponseEntity<?> handleBadRequestException(Exception e) {
         log.debug("Bad request exception occurred: {}", e.getMessage(), e);

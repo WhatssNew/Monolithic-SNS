@@ -1,15 +1,14 @@
 package com.sidepr.mono.sns.post.service;
 
 import com.sidepr.mono.sns.comment.domain.Comment;
+import com.sidepr.mono.sns.comment.dto.CommentDetailResponse;
+import com.sidepr.mono.sns.comment.repository.CommentRepository;
 import com.sidepr.mono.sns.global.error.exception.RuntimeIOException;
 import com.sidepr.mono.sns.global.fileuploader.FileUploader;
 import com.sidepr.mono.sns.post.domain.Post;
 import com.sidepr.mono.sns.post.domain.PostImage;
 import com.sidepr.mono.sns.post.domain.PostTag;
-import com.sidepr.mono.sns.post.dto.PostCreateRequest;
-import com.sidepr.mono.sns.post.dto.PostDetailResponse;
-import com.sidepr.mono.sns.post.dto.PostUpdateRequest;
-import com.sidepr.mono.sns.post.dto.PostUpdateResponse;
+import com.sidepr.mono.sns.post.dto.*;
 import com.sidepr.mono.sns.post.exception.NotFoundPostException;
 import com.sidepr.mono.sns.post.exception.NotPermittedPostException;
 import com.sidepr.mono.sns.post.repository.PostRepository;
@@ -21,6 +20,8 @@ import com.sidepr.mono.sns.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +45,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final CommentRepository commentRepository;
     private final FileUploader uploader;
 
     @Value("${file.post}")
@@ -128,21 +130,24 @@ public class PostService {
         return post;
     }
 
-    //TODO 단건 디테일
     @Transactional(readOnly = true)
     public PostDetailResponse findPost(Long postId){
         Post post = postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new NotFoundPostException(NOT_FOUND_RESOURCE_ERROR));
 
-        //TODO post에 comment 추가
-        List<Comment> comments = null;
-        return post.toPostDetailResponse(comments);
+        List<Comment> comments = commentRepository.findTop20ByPostAndIsDeletedFalseOrderByCreatedDateDesc(post);
+        List<CommentDetailResponse> commentDetailResponses = comments.stream()
+                .map(Comment::toCommentDetailResponse)
+                .collect(Collectors.toList());
+
+        return post.toPostDetailResponse(commentDetailResponses);
     }
 
-    //TODO 리스트
     @Transactional(readOnly = true)
-    public List<PostDetailResponse> findPosts(){
-        return null;
+    public Page<PostListResponse> findPosts(Long userId, Pageable pageable) {
+        User user = findActiveUser(userId);
+        Page<Post> posts = postRepository.findAll(pageable);
+        return posts.map(Post::toPostListResponse);
     }
 
 

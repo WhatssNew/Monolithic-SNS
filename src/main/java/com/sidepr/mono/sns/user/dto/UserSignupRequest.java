@@ -2,6 +2,7 @@ package com.sidepr.mono.sns.user.dto;
 
 
 import com.sidepr.mono.sns.global.error.ErrorCode;
+import com.sidepr.mono.sns.user.domain.Role;
 import com.sidepr.mono.sns.user.domain.User;
 import com.sidepr.mono.sns.user.exception.NotValidPasswordException;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ public class UserSignupRequest {
         return User.builder()
                 .name(name)
                 .email(email)
+                .roles(Role.USER)
                 .nickname(nickname)
                 .password(password)
                 .build();
