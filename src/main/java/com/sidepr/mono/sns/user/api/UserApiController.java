@@ -46,11 +46,18 @@ public class UserApiController {
         return ResponseEntity.ok(ApiUtils.success(userId));
     }
 
-    @GetMapping
+    @GetMapping("/mypage")
     public ResponseEntity<ApiUtils.ApiResult<UserResponse>> mypage(
             @AuthenticationPrincipal JwtAuthentication authentication
     ){
-        return ResponseEntity.ok(ApiUtils.success(userService.findUser(authentication.getId())));
+        return ResponseEntity.ok(ApiUtils.success(userService.findUserById(authentication.getId())));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiUtils.ApiResult<UserResponse>> get(
+            @RequestParam(value = "nickname") String nickname
+    ){
+        return ResponseEntity.ok(ApiUtils.success(userService.findUserByNickname(nickname)));
     }
 
     @PostMapping("/login")

@@ -89,13 +89,24 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse findUser(Long id) {
+    public UserResponse findUserById(Long id) {
         return UserResponse.of(findActiveUser(id));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse findUserByNickname(String nickname) {
+        return UserResponse.of(findActiveUserByNickname(nickname));
     }
 
     @Transactional(readOnly = true)
     public User findActiveUser(Long id) {
         return userRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
+    }
+
+    @Transactional(readOnly = true)
+    public User findActiveUserByNickname(String nickname) {
+        return userRepository.findByNicknameAndIsDeletedFalse(nickname)
                 .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
     }
 

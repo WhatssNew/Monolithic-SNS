@@ -37,6 +37,7 @@ public class UserSignupRequest {
 
     @Size(max = 12)
     @NotBlank(message = "닉네임을 입력해 주세요")
+    @Pattern(regexp = "[a-z|A-Z|0-9|_]+")
     private String nickname;
 
     @Size(max = 15)

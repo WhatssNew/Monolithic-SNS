@@ -67,5 +67,4 @@ public class CommentApiController {
 
     // TODO 좋아요
 
-
 }
