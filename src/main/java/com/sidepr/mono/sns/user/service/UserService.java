@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.sidepr.mono.sns.global.error.ErrorCode.*;
@@ -63,9 +64,9 @@ public class UserService {
     }
 
     @Transactional
-    public void followUser(Long myUserId, Long followingUserId) {
+    public void followUser(Long myUserId, String nickname) {
         User user = findActiveUser(myUserId);
-        User followingUser = findActiveUser(followingUserId);
+        User followingUser = findActiveUserByNickname(nickname);
         isValidUserRelation(user, followingUser);
 
         Follow follow = new Follow(user, followingUser);
@@ -73,18 +74,17 @@ public class UserService {
     }
 
     @Transactional
-    public void unFollowUser(Long myUserId, Long unFollowingUserId) {
+    public void unFollowUser(Long myUserId, String nickname) {
         User user = findActiveUser(myUserId);
-        User unFollowingUser = findActiveUser(unFollowingUserId);
+        User unFollowingUser = findActiveUserByNickname(nickname);
         isValidUserRelation(user, unFollowingUser);
 
-        Follow follow = new Follow(user, unFollowingUser);
-        followRepository.delete(follow);
+        Follow followRelation = findFollowRelationByFollowedAndFollower(unFollowingUser, user);
+        followRepository.delete(followRelation);
     }
 
     @Transactional(readOnly = true)
     public Optional<User> findById(Long userId) {
-
         return userRepository.findById(userId);
     }
 
@@ -94,8 +94,37 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse findUserByNickname(String nickname) {
-        return UserResponse.of(findActiveUserByNickname(nickname));
+    public UserResponse findUserByNickname(String nickname, Long myUserId) {
+        User lookUpUser = findActiveUserByNicknameOrUserId(nickname, myUserId);
+        UserResponse looUpUserResponse = UserResponse.of(lookUpUser);
+        setUserResponseFollowInformation(myUserId, lookUpUser, looUpUserResponse);
+        return looUpUserResponse;
+    }
+
+    private Follow findFollowRelationByFollowedAndFollower(User followed, User following){
+        return followRepository.findByFollowedAndFollower(followed, following)
+                .orElseThrow(() -> new NotValidUserRelationException(NOT_VALID_REQUEST_ERROR));
+    }
+
+    private User findActiveUserByNicknameOrUserId(String nickname, Long myUserId){
+        if(!StringUtils.hasText(nickname)){
+            return findActiveUser(myUserId);
+        }
+        return findActiveUserByNickname(nickname);
+    }
+
+    private void setUserResponseFollowInformation(Long myUserId, User lookUpUser, UserResponse looUpUserResponse) {
+        if(Objects.equals(looUpUserResponse.getUserId(), myUserId)) {
+            looUpUserResponse.setIsMyAccount(true);
+        } else {
+            looUpUserResponse.setIsMyAccount(false);
+            looUpUserResponse.setIsFollowed(
+                followRepository.existsByFollowedAndFollower(
+                        findActiveUser(myUserId),
+                        lookUpUser
+                )
+            );
+        }
     }
 
     @Transactional(readOnly = true)
@@ -158,7 +187,7 @@ public class UserService {
     }
 
     private void isValidUserRelation(User user, User followingUser) {
-        if(user != followingUser) throw new NotValidUserRelationException(NOT_VALID_REQUEST_ERROR);
+        if(user == followingUser) throw new NotValidUserRelationException(NOT_VALID_REQUEST_ERROR);
     }
 
     private String getDayFormatDirectoryName() {

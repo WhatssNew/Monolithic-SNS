@@ -17,6 +17,17 @@ public class UserResponse {
     private String email;
     private String nickname;
     private String profileImage;
+    private Boolean isFollowed;
+
+    private Boolean isMyAccount;
+
+    public void setIsFollowed(Boolean isFollowed){
+        this.isFollowed = isFollowed;
+    }
+
+    public void setIsMyAccount(Boolean isMyAccount){
+        this.isMyAccount = isMyAccount;
+    }
 
     @Builder
     public UserResponse(

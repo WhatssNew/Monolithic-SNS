@@ -57,11 +57,11 @@ public class User extends BaseTimeEntity {
     private String phoneNumber;
 
     @Builder.Default
-    @OneToMany(mappedBy = "followed", cascade = ALL)
+    @OneToMany(mappedBy = "followed", cascade = ALL, orphanRemoval = true)
     private List<Follow> follower = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "follower", cascade = ALL)
+    @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
     private List<Follow> following = new ArrayList<>();
 
     @Builder.Default

@@ -18,16 +18,16 @@ import static lombok.AccessLevel.PROTECTED;
 public class Follow extends BaseTimeEntity {
 
     @Id @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "followed")
+    @JoinColumn(name = "followed", nullable = false)
     private User followed;
 
     @Id @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "follower")
+    @JoinColumn(name = "follower", nullable = false)
     private User follower;
 
     public Follow(User follower, User following) {
         this.follower = follower;
         this.followed = following;
-        follower.followUser(this);
+//        follower.followUser(this);
     }
 }

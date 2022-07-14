@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -77,7 +78,7 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/users").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 .antMatchers("/api/v1/users/login").permitAll()
                 .antMatchers("/api/v1/users/email").permitAll()
                 .antMatchers("/api/v1/**").hasRole(Role.USER.name())
@@ -88,5 +89,4 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
         http
                 .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
-
 }

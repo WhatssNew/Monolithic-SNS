@@ -1,6 +1,5 @@
 package com.sidepr.mono.sns.user.domain.id;
 
-import com.sidepr.mono.sns.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +10,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class FollowId implements Serializable {
 
-    private User followed;
+    private Long followed;
 
-    private User follower;
+    private Long follower;
 
     @Override
     public boolean equals(Object o) {

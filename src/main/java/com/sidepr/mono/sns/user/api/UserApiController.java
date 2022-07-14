@@ -46,18 +46,16 @@ public class UserApiController {
         return ResponseEntity.ok(ApiUtils.success(userId));
     }
 
-    @GetMapping("/mypage")
-    public ResponseEntity<ApiUtils.ApiResult<UserResponse>> mypage(
-            @AuthenticationPrincipal JwtAuthentication authentication
-    ){
-        return ResponseEntity.ok(ApiUtils.success(userService.findUserById(authentication.getId())));
-    }
-
     @GetMapping
     public ResponseEntity<ApiUtils.ApiResult<UserResponse>> get(
-            @RequestParam(value = "nickname") String nickname
+            @RequestParam(value = "nickname", defaultValue = "") String nickname,
+            @AuthenticationPrincipal JwtAuthentication token
     ){
-        return ResponseEntity.ok(ApiUtils.success(userService.findUserByNickname(nickname)));
+        return ResponseEntity.ok(ApiUtils.success(
+                userService.findUserByNickname(
+                        nickname,
+                        token.getId()
+                )));
     }
 
     @PostMapping("/login")
@@ -136,21 +134,21 @@ public class UserApiController {
         return httpHeaders;
     }
 
-    @PostMapping("/{id}/follow")
+    @PostMapping("/{nickname}/follow")
     public ResponseEntity<Void> followUser(
             @AuthenticationPrincipal JwtAuthentication token,
-            @PathVariable("id") Long userId
+            @PathVariable("nickname") String nickname
     ){
-        userService.followUser(token.getId(), userId);
+        userService.followUser(token.getId(), nickname);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{id}/unfollow")
+    @PostMapping("/{nickname}/unfollow")
     public ResponseEntity<Void> unFollowUser(
             @AuthenticationPrincipal JwtAuthentication token,
-            @PathVariable("id") Long userId
+            @PathVariable("nickname") String nickname
     ){
-        userService.unFollowUser(token.getId(), userId);
+        userService.unFollowUser(token.getId(), nickname);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
