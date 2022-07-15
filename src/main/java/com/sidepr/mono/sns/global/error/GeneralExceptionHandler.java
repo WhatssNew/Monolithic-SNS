@@ -1,6 +1,7 @@
 package com.sidepr.mono.sns.global.error;
 
 
+import com.sidepr.mono.sns.comment.exception.InvalidCommentRequestException;
 import com.sidepr.mono.sns.comment.exception.NotFoundCommentException;
 import com.sidepr.mono.sns.comment.exception.NotPermittedCommentException;
 import com.sidepr.mono.sns.global.error.exception.NotFoundException;
@@ -74,7 +75,8 @@ public class GeneralExceptionHandler {
             NotValidPasswordException.class,
             NotValidUserRelationException.class,
             DuplicateUserException.class,
-            InvalidPostRequestException.class
+            InvalidPostRequestException.class,
+            InvalidCommentRequestException.class
     })
     public ResponseEntity<?> handleBadRequestException(Exception e) {
         log.debug("Bad request exception occurred: {}", e.getMessage(), e);

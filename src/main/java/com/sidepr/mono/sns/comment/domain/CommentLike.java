@@ -2,6 +2,7 @@ package com.sidepr.mono.sns.comment.domain;
 
 import com.sidepr.mono.sns.comment.domain.id.CommentLikeId;
 import com.sidepr.mono.sns.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,5 +32,11 @@ public class CommentLike {
                     .remove(this);
         }
         this.comment = comment;
+    }
+
+    @Builder
+    public CommentLike(Comment comment, User user) {
+        this.comment = comment;
+        this.user = user;
     }
 }

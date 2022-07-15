@@ -1,7 +1,5 @@
 package com.sidepr.mono.sns.comment.domain.id;
 
-import com.sidepr.mono.sns.comment.domain.Comment;
-import com.sidepr.mono.sns.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +10,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class CommentLikeId implements Serializable {
 
-    private Comment comment;
+    private Long comment;
 
-    private User user;
+    private Long user;
 
     @Override
     public boolean equals(Object o) {

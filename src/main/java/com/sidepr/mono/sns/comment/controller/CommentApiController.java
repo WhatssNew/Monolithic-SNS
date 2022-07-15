@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +66,23 @@ public class CommentApiController {
         return ResponseEntity.ok(ApiUtils.success(comments));
     }
 
-    // TODO 좋아요
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<ApiUtils.ApiResult<Void>> saveLikeComment(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("commentId") Long postId,
+            @PathVariable("commentId") Long commentId
+    ){
+        commentService.likeComment(token.getId(), commentId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
+    @PostMapping("/{commentId}/nolike")
+    public ResponseEntity<ApiUtils.ApiResult<Void>> deleteLikeComment(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId
+    ){
+        commentService.notLikePost(token.getId(), commentId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
