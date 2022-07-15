@@ -69,8 +69,12 @@ public class UserService {
         User followingUser = findActiveUserByNickname(nickname);
         isValidUserRelation(user, followingUser);
 
-        Follow follow = new Follow(user, followingUser);
-        followRepository.save(follow);
+        followRepository.save(
+                Follow.builder()
+                        .follower(user)
+                        .following(followingUser)
+                        .build()
+        );
     }
 
     @Transactional
@@ -79,8 +83,9 @@ public class UserService {
         User unFollowingUser = findActiveUserByNickname(nickname);
         isValidUserRelation(user, unFollowingUser);
 
-        Follow followRelation = findFollowRelationByFollowedAndFollower(unFollowingUser, user);
-        followRepository.delete(followRelation);
+        followRepository.delete(
+                findFollowRelationByFollowedAndFollower(unFollowingUser, user)
+        );
     }
 
     @Transactional(readOnly = true)

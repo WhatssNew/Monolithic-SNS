@@ -3,6 +3,7 @@ package com.sidepr.mono.sns.user.domain;
 
 import com.sidepr.mono.sns.global.BaseTimeEntity;
 import com.sidepr.mono.sns.user.domain.id.FollowId;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,9 +26,9 @@ public class Follow extends BaseTimeEntity {
     @JoinColumn(name = "follower", nullable = false)
     private User follower;
 
+    @Builder
     public Follow(User follower, User following) {
         this.follower = follower;
         this.followed = following;
-//        follower.followUser(this);
     }
 }
