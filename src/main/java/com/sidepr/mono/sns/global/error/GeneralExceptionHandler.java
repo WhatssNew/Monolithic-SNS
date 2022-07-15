@@ -7,6 +7,7 @@ import com.sidepr.mono.sns.global.error.exception.NotFoundException;
 import com.sidepr.mono.sns.global.error.exception.NotPermittedResourceException;
 import com.sidepr.mono.sns.global.error.exception.UnauthorizedException;
 import com.sidepr.mono.sns.global.utils.ApiUtils;
+import com.sidepr.mono.sns.post.exception.InvalidPostRequestException;
 import com.sidepr.mono.sns.post.exception.NotFoundPostException;
 import com.sidepr.mono.sns.post.exception.NotPermittedPostException;
 import com.sidepr.mono.sns.user.exception.DuplicateUserException;
@@ -72,7 +73,8 @@ public class GeneralExceptionHandler {
             MethodArgumentNotValidException.class,
             NotValidPasswordException.class,
             NotValidUserRelationException.class,
-            DuplicateUserException.class
+            DuplicateUserException.class,
+            InvalidPostRequestException.class
     })
     public ResponseEntity<?> handleBadRequestException(Exception e) {
         log.debug("Bad request exception occurred: {}", e.getMessage(), e);

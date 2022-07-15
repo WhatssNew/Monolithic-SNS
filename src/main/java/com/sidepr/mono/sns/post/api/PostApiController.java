@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +76,21 @@ public class PostApiController {
         Page<PostListResponse> posts = postService.findPosts(token.getId(), pageable);
         return ResponseEntity.ok(ApiUtils.success(posts));
     }
+    @PostMapping("/{id}/like")
+    public ResponseEntity<ApiUtils.ApiResult<Void>> saveLikePost(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("id") Long id
+    ){
+        postService.likePost(token.getId(), id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-    // TODO 좋아요
+    @PostMapping("/{id}/nolike")
+    public ResponseEntity<ApiUtils.ApiResult<Void>> deleteLikePost(
+            @AuthenticationPrincipal JwtAuthentication token,
+            @PathVariable("id") Long id
+    ){
+        postService.notLikePost(token.getId(), id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
