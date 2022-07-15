@@ -2,6 +2,7 @@ package com.sidepr.mono.sns.post.domain;
 
 import com.sidepr.mono.sns.post.domain.id.PostLikeId;
 import com.sidepr.mono.sns.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,5 +32,11 @@ public class PostLike {
                     .remove(this);
         }
         this.post = post;
+    }
+
+    @Builder
+    public PostLike(Post post, User user) {
+        this.post = post;
+        this.user = user;
     }
 }

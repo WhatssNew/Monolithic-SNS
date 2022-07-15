@@ -1,7 +1,5 @@
 package com.sidepr.mono.sns.post.domain.id;
 
-import com.sidepr.mono.sns.post.domain.Post;
-import com.sidepr.mono.sns.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -13,9 +11,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class PostLikeId implements Serializable {
 
-    private Post post;
+    private Long post;
 
-    private User user;
+    private Long user;
 
     @Override
     public boolean equals(Object o) {

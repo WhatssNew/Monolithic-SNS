@@ -7,10 +7,13 @@ import com.sidepr.mono.sns.global.error.exception.RuntimeIOException;
 import com.sidepr.mono.sns.global.fileuploader.FileUploader;
 import com.sidepr.mono.sns.post.domain.Post;
 import com.sidepr.mono.sns.post.domain.PostImage;
+import com.sidepr.mono.sns.post.domain.PostLike;
 import com.sidepr.mono.sns.post.domain.PostTag;
 import com.sidepr.mono.sns.post.dto.*;
+import com.sidepr.mono.sns.post.exception.InvalidPostRequestException;
 import com.sidepr.mono.sns.post.exception.NotFoundPostException;
 import com.sidepr.mono.sns.post.exception.NotPermittedPostException;
+import com.sidepr.mono.sns.post.repository.PostLikeRepository;
 import com.sidepr.mono.sns.post.repository.PostRepository;
 import com.sidepr.mono.sns.tag.domain.Tag;
 import com.sidepr.mono.sns.tag.repository.TagRepository;
@@ -46,6 +49,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
+    private final PostLikeRepository postLikeRepository;
     private final FileUploader uploader;
 
     @Value("${file.post}")
@@ -114,6 +118,35 @@ public class PostService {
                 .build();
     }
 
+    @Transactional
+    public void likePost(Long userId, Long postId) {
+        User user = findActiveUser(userId);
+        Post post = findActivePost(postId);
+        isValidPostLikeRequest(user, post);
+
+        postLikeRepository.save(
+                PostLike.builder()
+                        .user(user)
+                        .post(post)
+                        .build()
+        );
+    }
+
+    @Transactional
+    public void notLikePost(Long userId, Long postId) {
+        User user = findActiveUser(userId);
+        Post post = findActivePost(postId);
+
+        postLikeRepository.delete(
+                findUserPostLike(user, post)
+        );
+    }
+
+    private PostLike findUserPostLike(User user, Post post) {
+        return postLikeRepository.findByUserAndPost(user, post)
+                .orElseThrow(() -> new InvalidPostRequestException(NOT_VALID_REQUEST_ERROR));
+    }
+
     @Transactional(readOnly = true)
     public User findActiveUser(Long id) {
         return userRepository.findByIdAndIsDeletedFalse(id)
@@ -123,8 +156,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Post findActiveMyPost(Long userId, Long postId) {
         User user = findActiveUser(userId);
-        Post post =  postRepository.findByIdAndIsDeletedFalse(postId)
-                .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
+        Post post =  findActivePost(postId);
 
         if(post.getUser() != user) throw new NotPermittedPostException(NOT_PERMITTED_RESOURCE_ERROR);
         return post;
@@ -132,8 +164,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostDetailResponse findPost(Long postId){
-        Post post = postRepository.findByIdAndIsDeletedFalse(postId)
-                .orElseThrow(() -> new NotFoundPostException(NOT_FOUND_RESOURCE_ERROR));
+        Post post = findActivePost(postId);
 
         List<Comment> comments = commentRepository.findTop20ByPostAndIsDeletedFalseOrderByCreatedDateDesc(post);
         List<CommentDetailResponse> commentDetailResponses = comments.stream()
@@ -141,6 +172,11 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return post.toPostDetailResponse(commentDetailResponses);
+    }
+
+    private Post findActivePost(Long postId) {
+        return postRepository.findByIdAndIsDeletedFalse(postId)
+                .orElseThrow(() -> new NotFoundPostException(NOT_FOUND_RESOURCE_ERROR));
     }
 
     @Transactional(readOnly = true)
@@ -172,5 +208,10 @@ public class PostService {
         return tagMatcher.results()
                 .map(MatchResult::group)
                 .collect(Collectors.toList());
+    }
+
+    private void isValidPostLikeRequest(User user, Post post) {
+        if(postLikeRepository.existsByUserAndPost(user, post))
+            throw new InvalidPostRequestException(NOT_VALID_REQUEST_ERROR);
     }
 }
