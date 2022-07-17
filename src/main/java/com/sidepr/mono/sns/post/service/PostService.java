@@ -166,7 +166,7 @@ public class PostService {
     public PostDetailResponse findPost(Long postId){
         Post post = findActivePost(postId);
 
-        List<Comment> comments = commentRepository.findTop20ByPostAndIsDeletedFalseOrderByCreatedDateDesc(post);
+        List<Comment> comments = commentRepository.findTop20ByPostAndIsDeletedFalseAndParentNullOrderByCreatedDateDesc(post);
         List<CommentDetailResponse> commentDetailResponses = comments.stream()
                 .map(Comment::toCommentDetailResponse)
                 .collect(Collectors.toList());

@@ -1,7 +1,5 @@
 package com.sidepr.mono.sns.post.dto;
 
-//TODO list용 dto 만들기
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +21,7 @@ public class PostListResponse {
     private Boolean isDeleted;
     private List<String> images;
     private List<String> tags;
-    private List<String> likes;
+    private Long likes;
     @JsonFormat(pattern = "yyyy-HH-dd'T'HH:mm:ss")
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "yyyy-HH-dd'T'HH:mm:ss")
@@ -32,7 +30,7 @@ public class PostListResponse {
     @Builder
     public PostListResponse(
             Long id, Long userId, String content, Boolean isDeleted,
-            List<String> images, List<String> tags, List<String> likes,
+            List<String> images, List<String> tags, Long likes,
             LocalDateTime createdDate, LocalDateTime lastModifiedDate
     ){
         this.id = id;

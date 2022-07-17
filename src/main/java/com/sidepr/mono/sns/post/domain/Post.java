@@ -99,10 +99,7 @@ public class Post extends BaseTimeEntity {
                                 .collect(Collectors.toList())
                 )
                 .comments(comments)
-                .likes(
-                        // TODO likes response 생성해서 응답해야 함
-                        null
-                )
+                .likes((long) getPostLikes().size())
                 .createdDate(getCreatedDate())
                 .lastModifiedDate(getLastModifiedDate())
                 .build();
@@ -119,10 +116,7 @@ public class Post extends BaseTimeEntity {
                                 .map(PostImage::getImage)
                                 .collect(Collectors.toList())
                 )
-                .likes(
-                        // TODO likes response 생성해서 응답해야 함
-                        null
-                )
+                .likes((long) getPostLikes().size())
                 .createdDate(getCreatedDate())
                 .lastModifiedDate(getLastModifiedDate())
                 .build();

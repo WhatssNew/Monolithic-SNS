@@ -22,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 import static com.sidepr.mono.sns.global.error.ErrorCode.*;
 
 @Slf4j
@@ -42,7 +44,8 @@ public class CommentService {
     ){
         User user = findActiveUser(userId);
         Post post = findActivePost(postId);
-        Comment comment = commentCreateRequest.toEntity(user, post);
+        Comment parentComment = findActiveCommentOrNull(commentCreateRequest.getParentCommentId());
+        Comment comment = commentCreateRequest.toEntity(user, post, parentComment);
 
         return commentRepository.save(comment).getId();
     }
@@ -93,9 +96,8 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public Post findActivePost(Long postId) {
-        Post post =  postRepository.findByIdAndIsDeletedFalse(postId)
+        return postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
-        return post;
     }
 
     @Transactional(readOnly = true)
@@ -109,13 +111,19 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public Page<CommentDetailResponse> findComments(Long postId, Pageable pageable){
-        Page<Comment> comments = commentRepository.findAll(pageable);
+        Post post = findActivePost(postId);
+        Page<Comment> comments = commentRepository.findByPostAndIsDeletedFalseAndParentNullOrderByCreatedDateDesc(post, pageable);
         return comments.map(Comment::toCommentDetailResponse);
     }
 
     private Comment findActiveComment(Long commentId) {
         return commentRepository.findByIdAndIsDeletedFalse(commentId)
                 .orElseThrow(() -> new NotFoundCommentException(NOT_FOUND_RESOURCE_ERROR));
+    }
+
+    private Comment findActiveCommentOrNull(Long commentId){
+        if(Objects.isNull(commentId)) return null;
+        else return findActiveComment(commentId);
     }
 
     private void isValidCommentLikeRequest(User user, Comment comment) {

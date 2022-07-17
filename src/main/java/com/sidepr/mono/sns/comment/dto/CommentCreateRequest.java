@@ -16,17 +16,16 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class CommentCreateRequest {
 
-    // TODO prevComment 처리해야 함
-    private Long prevCommentId;
+    private Long parentCommentId;
     private String content;
 
-    public Comment toEntity(User user, Post post){
-        Comment comment = Comment.builder()
+    public Comment toEntity(User user, Post post, Comment parent){
+        return Comment.builder()
+                .parent(parent)
                 .post(post)
                 .user(user)
                 .content(content)
                 .isDeleted(false)
                 .build();
-        return comment;
     }
 }

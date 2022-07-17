@@ -21,10 +21,8 @@ public class PostDetailResponse {
     private Boolean isDeleted;
     private List<String> images;
     private List<String> tags;
-    //TODO Response용 comment 만들어야 함
     private List<CommentDetailResponse> comments;
-    //TODO Response용 like 만들어야 함
-    private List<String> likes;
+    private Long likes;
     @JsonFormat(pattern = "yyyy-HH-dd'T'HH:mm:ss")
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "yyyy-HH-dd'T'HH:mm:ss")
@@ -34,7 +32,7 @@ public class PostDetailResponse {
     public PostDetailResponse(
             Long id, String userId, String content, Boolean isDeleted,
             List<String> images, List<String> tags, List<CommentDetailResponse> comments,
-            List<String> likes, LocalDateTime createdDate, LocalDateTime lastModifiedDate
+            Long likes, LocalDateTime createdDate, LocalDateTime lastModifiedDate
     ){
         this.id = id;
         this.userId = userId;

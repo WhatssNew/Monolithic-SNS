@@ -151,4 +151,6 @@ public class UserApiController {
         userService.unFollowUser(token.getId(), nickname);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    // TODO Like한 user 조회
 }
