@@ -2,6 +2,7 @@ package com.sidepr.mono.sns.comment.service;
 
 import com.sidepr.mono.sns.comment.domain.Comment;
 import com.sidepr.mono.sns.comment.domain.CommentLike;
+import com.sidepr.mono.sns.comment.domain.CommentTagUser;
 import com.sidepr.mono.sns.comment.dto.CommentCreateRequest;
 import com.sidepr.mono.sns.comment.dto.CommentDetailResponse;
 import com.sidepr.mono.sns.comment.dto.CommentUpdateRequest;
@@ -17,12 +18,18 @@ import com.sidepr.mono.sns.user.exception.NotFoundUserException;
 import com.sidepr.mono.sns.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.sidepr.mono.sns.global.error.ErrorCode.*;
 
@@ -36,6 +43,9 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
 
+    @Value("${tag.user.pattern}")
+    private String USER_TAG_PATTERN;
+
     @Transactional
     public Long saveComment(
             Long userId,
@@ -44,8 +54,16 @@ public class CommentService {
     ){
         User user = findActiveUser(userId);
         Post post = findActivePost(postId);
+        List<String> tagUserNickname = getContentTagUser(commentCreateRequest.getContent());
         Comment parentComment = findActiveCommentOrNull(commentCreateRequest.getParentCommentId());
         Comment comment = commentCreateRequest.toEntity(user, post, parentComment);
+
+        List<CommentTagUser> tagUser = tagUserNickname.stream()
+                .map(this::findActiveUserByNickname)
+                .map(CommentTagUser::new)
+                .collect(Collectors.toList());
+
+        tagUser.forEach(comment::addCommentTagUSer);
 
         return commentRepository.save(comment).getId();
     }
@@ -95,6 +113,12 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public User findActiveUserByNickname(String nickname) {
+        return userRepository.findByNicknameAndIsDeletedFalse(nickname)
+                .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
+    }
+
+    @Transactional(readOnly = true)
     public Post findActivePost(Long postId) {
         return postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new NotFoundUserException(NOT_FOUND_RESOURCE_ERROR));
@@ -135,5 +159,15 @@ public class CommentService {
     private CommentLike findUserCommentLike(User user, Comment comment) {
         return commentLikeRepository.findByUserAndComment(user, comment)
                 .orElseThrow(() -> new InvalidCommentRequestException(NOT_VALID_REQUEST_ERROR));
+    }
+
+    private List<String> getContentTagUser(String source) {
+        Pattern tagPattern = Pattern.compile(USER_TAG_PATTERN);
+        Matcher tagMatcher = tagPattern.matcher(source);
+
+        return tagMatcher.results()
+                .map(MatchResult::group)
+                .map(s -> s.substring(1))
+                .collect(Collectors.toList());
     }
 }

@@ -9,4 +9,8 @@ file:
   user: "user-image/"
 
 tag:
-  pattern: "#[ㄱ-ㅎ|가-힣|a-z|A-Z|\\d|_]+"
+  tag:
+    pattern: "#[ㄱ-ㅎ|가-힣|a-z|A-Z|\\d|_]+"
+  user:
+    pattern: "@[a-z|A-Z|\\d|_]+"
+

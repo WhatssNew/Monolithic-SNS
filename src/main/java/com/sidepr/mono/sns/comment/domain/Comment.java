@@ -54,7 +54,7 @@ public class Comment extends BaseTimeEntity {
     private List<CommentLike> commentLikes = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "comment", cascade = ALL, fetch = LAZY)
+    @OneToMany(mappedBy = "comment", cascade = ALL, orphanRemoval = true)
     private List<CommentTagUser> commentTagUsers = new ArrayList<>();
 
     @Builder.Default
@@ -96,5 +96,10 @@ public class Comment extends BaseTimeEntity {
                 .parentId(getPrevCommentIdOrNull())
                 .commentLike((long) commentLikes.size())
                 .build();
+    }
+
+    public void addCommentTagUSer(CommentTagUser commentTagUser) {
+        this.getCommentTagUsers().add(commentTagUser);
+        commentTagUser.setThisComment(this);
     }
 }

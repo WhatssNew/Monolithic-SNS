@@ -22,4 +22,12 @@ public class CommentTagUser {
     @Id @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public CommentTagUser(User user) {
+        this.user = user;
+    }
+
+    public void setThisComment(Comment comment){
+        this.comment = comment;
+    }
 }

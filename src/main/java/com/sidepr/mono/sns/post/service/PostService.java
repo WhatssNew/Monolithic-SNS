@@ -55,7 +55,7 @@ public class PostService {
     @Value("${file.post}")
     private String DIRECTORY;
 
-    @Value("${tag.pattern}")
+    @Value("${tag.tag.pattern}")
     private String TAG_PATTERN;
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -207,6 +207,7 @@ public class PostService {
 
         return tagMatcher.results()
                 .map(MatchResult::group)
+                .map(s -> s.substring(1))
                 .collect(Collectors.toList());
     }
 

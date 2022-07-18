@@ -59,7 +59,6 @@ public class GeneralExceptionHandler {
     @ExceptionHandler({
             UnauthorizedException.class,
             NotPermittedResourceException.class,
-            NotFoundUserException.class,
             NotPermittedPostException.class,
             NotPermittedCommentException.class
     })
@@ -76,7 +75,8 @@ public class GeneralExceptionHandler {
             NotValidUserRelationException.class,
             DuplicateUserException.class,
             InvalidPostRequestException.class,
-            InvalidCommentRequestException.class
+            InvalidCommentRequestException.class,
+            NotFoundUserException.class,
     })
     public ResponseEntity<?> handleBadRequestException(Exception e) {
         log.debug("Bad request exception occurred: {}", e.getMessage(), e);
