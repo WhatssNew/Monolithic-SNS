@@ -77,13 +77,21 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
         return source;
     }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .httpBasic()
+                .disable()
+                .cors()
+                .and()
                 .csrf()
                 .disable()
                 .headers()
