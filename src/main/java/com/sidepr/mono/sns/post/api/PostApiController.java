@@ -94,4 +94,17 @@ public class PostApiController {
         postService.notLikePost(token.getId(), id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/tag/{tag}")
+    public ResponseEntity<ApiUtils.ApiResult<Page<PostListResponse>>> tagPost(
+            @PathVariable("tag") String tagString,
+            @PageableDefault(size = 20) Pageable pageable
+    ){
+        Page<PostListResponse> posts = postService.findPostByTag(tagString, pageable);
+        return ResponseEntity.ok(ApiUtils.success(posts));
+    }
+
+    // TODO 게시글에 대한 like 정보
+
+    // TODO 팔로우에 대한 게시글
 }

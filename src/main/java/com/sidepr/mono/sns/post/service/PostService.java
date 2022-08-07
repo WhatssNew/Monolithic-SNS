@@ -215,4 +215,8 @@ public class PostService {
         if(postLikeRepository.existsByUserAndPost(user, post))
             throw new InvalidPostRequestException(NOT_VALID_REQUEST_ERROR);
     }
+    public Page<PostListResponse> findPostByTag(String tagString, Pageable pageable) {
+        Page<Post> posts = postRepository.findByTag(tagString, pageable);
+        return posts.map(Post::toPostListResponse);
+    }
 }
