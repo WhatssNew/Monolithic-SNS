@@ -35,6 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/application-cloud.yml
+
+
 /src/main/resources/application-db.yml
+/src/main/resources/application-jwt2.yml
+/src/main/resources/application-cloud.yml
 /src/main/resources/application-jwt.yml
