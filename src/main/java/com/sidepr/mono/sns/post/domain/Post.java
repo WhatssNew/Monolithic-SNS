@@ -41,7 +41,7 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false, columnDefinition = "TINYINT default false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
@@ -58,6 +58,13 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
+
+
+    public Post(User user, String content) {
+        this.user = user;
+        this.content = content;
+        postTags = new ArrayList<>();
+    }
 
     public void addComment(Comment comment){
         this.comments.add(comment);

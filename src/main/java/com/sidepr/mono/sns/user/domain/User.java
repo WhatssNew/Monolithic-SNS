@@ -69,10 +69,10 @@ public class User extends BaseTimeEntity {
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TINYINT default false")
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
     @Enumerated(EnumType.STRING)
-    private Role roles;
+    private Role roles = Role.USER;
 
     @Builder
     public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, boolean isDeleted) {
@@ -86,6 +86,16 @@ public class User extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.isDeleted = isDeleted;
         this.roles = Role.USER;
+    }
+
+    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber) {
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.profileImage = profileImage;
+        this.description = description;
+        this.phoneNumber = phoneNumber;
     }
 
     public void updateUserInfo(UserUpdateRequest userUpdateRequest){
