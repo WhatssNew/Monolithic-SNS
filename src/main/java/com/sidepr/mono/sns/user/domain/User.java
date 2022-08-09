@@ -98,6 +98,17 @@ public class User extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, Role role) {
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.profileImage = profileImage;
+        this.description = description;
+        this.phoneNumber = phoneNumber;
+        this.roles = role;
+    }
+
     public void updateUserInfo(UserUpdateRequest userUpdateRequest){
         this.nickname = userUpdateRequest.getNickname();
         this.description = userUpdateRequest.getDescription();
