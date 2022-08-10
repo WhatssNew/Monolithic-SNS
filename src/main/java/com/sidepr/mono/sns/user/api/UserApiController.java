@@ -45,7 +45,9 @@ public class UserApiController {
     @ApiOperation(value = "회원가입")
     public ResponseEntity<ApiUtils.ApiResult<Long>> signup(@Validated @RequestBody UserSignupRequest form){
         Long userId = userService.signup(form);
-        return ResponseEntity.ok(ApiUtils.success(userId));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiUtils.success(userId));
     }
 
     @GetMapping
@@ -86,10 +88,8 @@ public class UserApiController {
                             ApiUtils.success(
                             new UserToken(user.getId(),
                                     token,
-                                    user.getRoles().toString())))
-                    ;
+                                    user.getRoles().toString())));
         } catch (AuthenticationException e){
-            // TODO response code 검토 필요
             throw new UnauthorizedException(e.getMessage(), e);
         }
     }
@@ -129,6 +129,7 @@ public class UserApiController {
     }
 
     @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "회원 삭제", notes = "`isDelete = true`")
     public ResponseEntity<ApiUtils.ApiResult<Long>> delete(
             @AuthenticationPrincipal JwtAuthentication token
@@ -143,7 +144,7 @@ public class UserApiController {
             @PathVariable("nickname") String nickname
     ){
         userService.followUser(token.getId(), nickname);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{nickname}/unfollow")
@@ -153,7 +154,7 @@ public class UserApiController {
             @PathVariable("nickname") String nickname
     ){
         userService.unFollowUser(token.getId(), nickname);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     private HttpHeaders putJwtToAuthenticationHeader(String token) {

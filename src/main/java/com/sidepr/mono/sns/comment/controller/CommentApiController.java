@@ -29,7 +29,9 @@ public class CommentApiController {
             @RequestBody CommentCreateRequest commentCreateRequest
     ){
         Long commentId = commentService.saveComment(token.getId(), postId, commentCreateRequest);
-        return ResponseEntity.ok(ApiUtils.success(commentId));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiUtils.success(commentId));
     }
 
     @DeleteMapping("/{commentId}")
@@ -73,7 +75,7 @@ public class CommentApiController {
             @PathVariable("commentId") Long commentId
     ){
         commentService.likeComment(token.getId(), commentId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{commentId}/nolike")
@@ -83,6 +85,6 @@ public class CommentApiController {
             @PathVariable("commentId") Long commentId
     ){
         commentService.notLikePost(token.getId(), commentId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }

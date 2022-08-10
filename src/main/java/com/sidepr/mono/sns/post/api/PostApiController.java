@@ -40,7 +40,9 @@ public class PostApiController {
             @RequestPart("files") List<MultipartFile> files
     ){
         Long postId = postService.savePost(token.getId(), postCreateRequest, files);
-        return ResponseEntity.ok(ApiUtils.success(postId));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiUtils.success(postId));
     }
 
     @DeleteMapping("/{id}")
