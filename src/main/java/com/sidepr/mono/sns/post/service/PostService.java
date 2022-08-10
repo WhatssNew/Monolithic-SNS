@@ -182,7 +182,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<PostListResponse> findPosts(Long userId, Pageable pageable) {
         User user = findActiveUser(userId);
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findByFollowing(user, pageable);
         return posts.map(Post::toPostListResponse);
     }
 
