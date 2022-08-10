@@ -46,4 +46,9 @@ public class PostImage {
     public int hashCode() {
         return Objects.hash(getId(), getPost(), getImage());
     }
+
+    public PostImage(Post post, String image) {
+        this.post = post;
+        this.image = image;
+    }
 }

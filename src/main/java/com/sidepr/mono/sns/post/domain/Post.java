@@ -63,6 +63,9 @@ public class Post extends BaseTimeEntity {
     public Post(User user, String content) {
         this.user = user;
         this.content = content;
+        images = new ArrayList<>();
+        comments = new ArrayList<>();
+        postLikes = new ArrayList<>();
         postTags = new ArrayList<>();
     }
 

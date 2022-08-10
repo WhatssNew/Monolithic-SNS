@@ -22,7 +22,7 @@ class PostRepositoryTest extends RepositoryTest{
 
     @BeforeEach
     void before(){
-        User publisher = new User(1L,
+        User publisher = new User(
                 "이글써",
                 "saefdf_04",
                 "abc123@gmail.com",
@@ -31,7 +31,7 @@ class PostRepositoryTest extends RepositoryTest{
                 "스무살~",
                 "010-1234-1234");
 
-        User subscriber = new User(2L,
+        User subscriber = new User(
                 "이글봐",
                 "lee_03",
                 "abc1234@gmail.com",

@@ -88,7 +88,7 @@ public class User extends BaseTimeEntity {
         this.roles = Role.USER;
     }
 
-    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber) {
+    public User(String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -98,7 +98,7 @@ public class User extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public User(Long id, String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, Role role) {
+    public User(String name, String nickname, String email, String password, String profileImage, String description, String phoneNumber, Role role) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
