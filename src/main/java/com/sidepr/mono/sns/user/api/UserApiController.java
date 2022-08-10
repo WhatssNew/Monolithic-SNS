@@ -10,6 +10,7 @@ import com.sidepr.mono.sns.user.security.Jwt;
 import com.sidepr.mono.sns.user.security.JwtAuthentication;
 import com.sidepr.mono.sns.user.security.JwtAuthenticationToken;
 import com.sidepr.mono.sns.user.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,12 +42,14 @@ public class UserApiController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping
+    @ApiOperation(value = "회원가입")
     public ResponseEntity<ApiUtils.ApiResult<Long>> signup(@Validated @RequestBody UserSignupRequest form){
         Long userId = userService.signup(form);
         return ResponseEntity.ok(ApiUtils.success(userId));
     }
 
     @GetMapping
+    @ApiOperation(value = "회원 정보 조회")
     public ResponseEntity<ApiUtils.ApiResult<UserResponse>> get(
             @RequestParam(value = "nickname", defaultValue = "") String nickname,
             @AuthenticationPrincipal JwtAuthentication token
@@ -59,6 +62,7 @@ public class UserApiController {
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "로그인", notes = "인증 토큰 발행")
     public ResponseEntity<ApiUtils.ApiResult<UserToken>> login(
             @Valid @RequestBody UserLoginRequest request
     ){
@@ -91,6 +95,7 @@ public class UserApiController {
     }
 
     @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "회원 정보 수정", notes = "회원 사진 등록 가능")
     public ResponseEntity<ApiUtils.ApiResult<Long>> update(
             @AuthenticationPrincipal JwtAuthentication token,
             @Valid @RequestPart UserUpdateRequest userUpdateRequest,
@@ -104,6 +109,7 @@ public class UserApiController {
     }
 
     @GetMapping("/email")
+    @ApiOperation(value = "이미 등록된 이메일 조회", notes = "회원 가입 절차 중 사용")
     public ResponseEntity<ApiUtils.ApiResult<Boolean>> checkValidEmail(
             @Email @RequestParam(value = "value", defaultValue = "") String email
     ){
@@ -111,6 +117,7 @@ public class UserApiController {
     }
 
     @PutMapping("/password")
+    @ApiOperation(value = "비밀번호 수정")
     public ResponseEntity<ApiUtils.ApiResult<Long>> updatePassword(
             @AuthenticationPrincipal JwtAuthentication token,
             @Valid @RequestBody UserPasswordChangeRequest userPasswordChangeRequest
@@ -122,19 +129,15 @@ public class UserApiController {
     }
 
     @DeleteMapping
+    @ApiOperation(value = "회원 삭제", notes = "`isDelete = true`")
     public ResponseEntity<ApiUtils.ApiResult<Long>> delete(
             @AuthenticationPrincipal JwtAuthentication token
     ){
         return ResponseEntity.ok(ApiUtils.success(userService.delete(token.getId())));
     }
 
-    private HttpHeaders putJwtToAuthenticationHeader(String token) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(jwtTokenConfigure.getHeader(), "Bearer " + token);
-        return httpHeaders;
-    }
-
     @PostMapping("/{nickname}/follow")
+    @ApiOperation(value = "회원 팔로우 요청")
     public ResponseEntity<Void> followUser(
             @AuthenticationPrincipal JwtAuthentication token,
             @PathVariable("nickname") String nickname
@@ -144,6 +147,7 @@ public class UserApiController {
     }
 
     @PostMapping("/{nickname}/unfollow")
+    @ApiOperation(value = "회원 언팔로우 요청")
     public ResponseEntity<Void> unFollowUser(
             @AuthenticationPrincipal JwtAuthentication token,
             @PathVariable("nickname") String nickname
@@ -152,5 +156,10 @@ public class UserApiController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    private HttpHeaders putJwtToAuthenticationHeader(String token) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(jwtTokenConfigure.getHeader(), "Bearer " + token);
+        return httpHeaders;
+    }
     // TODO Like한 user 조회
 }
