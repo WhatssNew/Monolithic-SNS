@@ -71,7 +71,7 @@ public class UserService {
 
         followRepository.save(
                 Follow.builder()
-                        .follower(user)
+                        .followed(user)
                         .following(followingUser)
                         .build()
         );

@@ -27,8 +27,8 @@ public class Follow extends BaseTimeEntity {
     private User follower;
 
     @Builder
-    public Follow(User follower, User following) {
-        this.follower = follower;
+    public Follow(User followed, User following) {
+        this.follower = followed;
         this.followed = following;
     }
 }
