@@ -1,0 +1,24 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    ports: 
+      - "3306:3306"
+    env_file:
+      -  env/mysql.env
+    volumes:
+      - ./db/data:/var/lib/mysql:rw
+    restart: always 
+  app:
+    build:
+      context: ./app
+    image: openjdk:11-jdk
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: ["./gradlew", "bootrun"]
+    depends_on:
+      - db
+    restart: always 

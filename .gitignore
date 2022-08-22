@@ -42,3 +42,5 @@ out/
 /src/main/resources/application-cloud.yml
 /src/main/resources/application-jwt.yml
 /src/test/resources/application-test.yml
+/db/
+/env/
