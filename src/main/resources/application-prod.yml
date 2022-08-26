@@ -1,8 +1,6 @@
 spring:
   main:
     allow-circular-references: true
-  profiles:
-    include: db, jwt, cloud
 
   mvc:
     pathmatch:
@@ -13,6 +11,48 @@ spring:
       pageable:
         default-page-size: 10
         max-page-size: 2000
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/mono
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        default_batch_fetch_size: 1000
 
 logging.level:
   org.hibernate.SQL: debug
+
+jwt:
+  token:
+    header: Authorization
+    issuer: sidepr
+    client-secret: Rel3Bjce2MajBo09qgkNgYaTuzvJe8iwnBFhsDS5
+    expiry-seconds: 0
+
+cloud:
+  aws:
+    stack: false
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: sidepr-sns
+    credentials:
+      accessKey: AKIA46YENQL4SAG4L3XR
+      secretKey: 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
+
+file:
+  dir: "${pwd}/../"
+  post: "post-image/"
+  user: "user-image/"
+
+tag:
+  tag:
+    pattern: "#[ㄱ-ㅎ|가-힣|a-z|A-Z|\\d|_]+"
+  user:
+    pattern: "@[a-z|A-Z|\\d|_]+"
