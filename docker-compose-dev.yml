@@ -5,7 +5,7 @@ services:
     ports: 
       - "3306:3306"
     env_file:
-      -  env/mysql.env
+      -  env/mysql-dev.env
     volumes:
       - ./db/data:/var/lib/mysql:rw
     restart: always
@@ -14,10 +14,10 @@ services:
   app:
     container_name: sns
     build:
-      dockerfile: ./dockerfiles/Dockerfile
+      dockerfile: ./dockerfiles/Dockerfile-dev
       context: .
     env_file:
-      - env/datasource.env
+      - env/datasource-dev.env
     ports:
       - "8080:8080"
     depends_on:
